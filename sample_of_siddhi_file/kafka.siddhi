@@ -1,0 +1,18 @@
+@App:name('kafka')
+@App:description('Consume events from a Kafka Topic and publish to a different Kafka Topic')
+
+
+@source(type = 'kafka', topic.list = "test", threading.option = "single.thread", group.id = "group", bootstrap.servers = "kafka:9092",
+	@map(type = 'json'))
+define stream SweetProductionStream (name string, amount double);
+
+@sink(type = 'log',
+	@map(type = 'passThrough'))
+
+
+define stream TotalStream (name string, amount double);
+
+@info(name = 'ExpQuery')
+from SweetProductionStream 
+select * 
+insert into TotalStream;
